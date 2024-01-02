@@ -1,26 +1,24 @@
 use std::fs;
 
-fn parser(contents: &String) -> usize {
+fn do_part1(contents: &String) -> usize {
     let mut sum = 0;
-    for line in contents.trim().lines() {
-        let mut num = String::new();
-        for ch in line.chars() {
-            if ch.is_digit(10) {
-                num.push(ch);
-            }
+    for mut line in contents.trim().lines() {
+        while !line.chars().next().unwrap().is_digit(10) {
+            line = &line[1..];
         }
 
-        // note: assuming ASCII characters here.
-        let mut res = String::new();
-        res.push(num.chars().nth(0).unwrap());
-        res.push(num.chars().last().unwrap());
-        let tmp: usize = res.parse().expect("a number");
-        sum += tmp;
+        while !line.chars().last().unwrap().is_digit(10) {
+            line = &line[..line.len() - 1];
+        }
+
+        let first = usize::try_from(line.chars().nth(0).unwrap().to_digit(10).unwrap()).unwrap();
+        let last = usize::try_from(line.chars().last().unwrap().to_digit(10).unwrap()).unwrap();
+        sum += first * 10 + last;
     }
     sum
 }
 
-fn part2(contents: &String) -> usize {
+fn do_part2(contents: &String) -> usize {
     let nums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     let mut sum = 0;
     for mut line in contents.trim().lines() {
@@ -38,7 +36,6 @@ fn part2(contents: &String) -> usize {
             if line.starts_with(text) {
                 first = i + 1;
             }
-
             if line.ends_with(text) {
                 last = i + 1;
             }
@@ -51,21 +48,19 @@ fn part2(contents: &String) -> usize {
             last = usize::try_from(line.chars().last().unwrap().to_digit(10).unwrap()).unwrap();
         }
 
-        let res = first * 10 + last;
-        sum += res;
+        sum += first * 10 + last;
     }
     sum
 }
-
 fn main() {
     let file_path = "input.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
 
-    let part1 = parser(&contents);
+    let part1 = do_part1(&contents);
     println!("Result part 1: {part1}");
-    // assert -> 54940
+    assert!(part1 == 54940);
 
-    let part2 = part2(&contents);
+    let part2 = do_part2(&contents);
     println!("Result part 2: {part2}");
-    // assert -> 54208
+    assert!(part2 == 54208);
 }
