@@ -60,6 +60,27 @@ fn do_part1(contents: &String) -> usize {
     sum
 }
 
+fn do_part2(contents:&String) -> usize {
+    let mut sum = 0;
+
+    for line in contents.trim().lines() {
+        let it = line.split(':');
+        let draws = it.last().unwrap().split(";");
+
+        let mut blue = 0;
+        let mut red = 0;
+        let mut green = 0;
+        for draw in draws {
+            let g = game_from_str(draw);
+            blue = blue.max(g.blue);
+            red = red.max(g.red);
+            green = green.max(g.green)
+        }
+        sum += red * green * blue;
+    }
+    sum
+}
+
 fn main() {
     let file_path = "input.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
@@ -67,4 +88,8 @@ fn main() {
     let part1 = do_part1(&contents);
     println!("Result part 1: {part1}");
     assert!(part1 == 2600);
+
+    let part2 = do_part2(&contents);
+    println!("Result part 2: {part2}");
+    assert!(part1 == 86036);
 }
