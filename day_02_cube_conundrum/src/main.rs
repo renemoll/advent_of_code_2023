@@ -91,5 +91,5 @@ fn main() {
 
     let part2 = do_part2(&contents);
     println!("Result part 2: {part2}");
-    assert!(part1 == 86036);
+    assert!(part2 == 86036);
 }
