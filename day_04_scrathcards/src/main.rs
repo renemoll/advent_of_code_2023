@@ -6,6 +6,20 @@ struct Input {
     haves: Vec<u8>
 }
 
+impl Input {
+    fn score(&self) -> usize {
+        let mut count = 0;
+        for w in self.winners.iter() {
+            if self.haves.iter().find(|&x| x == w) == None {
+                continue;
+            }
+            count += 1;
+        }
+
+        count
+    }
+}
+
 fn parse(contents: &String) -> Vec<Input> {
     let mut result: Vec<Input> = Vec::new();
 
@@ -44,34 +58,54 @@ fn parse(contents: &String) -> Vec<Input> {
 
 fn do_part1(input: &Vec<Input>) -> usize {
     let mut result = 0;
-    for i in input {
-        let Input{winners, haves} = i;
-        let mut score = 0;
-
-        for w in winners {
-            if haves.iter().find(|&x| x == w) == None {
-                continue;
-            }
-
-            if score == 0 {
-                score = 1;
-            } else {
-                score *= 2;
-            }
+    for card in input {
+        let score = card.score() as u32;
+        if score > 0 {
+            result += 2_usize.pow(score - 1);
         }
-        result += score;
     }
 
     result
 }
 
+fn do_part2(input: &Vec<Input>) -> usize {
+    let mut result = 0;
+    let mut copies = [1; 10];
+    for (n, card) in input.iter().enumerate() {
+        let copy = copies[0];
+
+        for i in 0..9 {
+            copies[i] = copies[i + 1];
+        }
+        copies[copies.len()-1] = 1;
+
+        let winners = card.score();
+        for i in 0..winners {
+            copies[i] += copy;
+        }
+        result += copy;
+
+        println!("card: {:?}", n+1);
+        println!("copy: {:?}", copy);
+        println!("copies: {:?}", copies);
+        println!("winners: {:?}", winners);
+        println!("result: {:?}\n", result);
+    }
+
+    result
+}
 
 fn main() {
+    // let file_path = "sample1.txt";
     let file_path = "input.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
     let input = parse(&contents);
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-//22193
+    assert!(part1 == 22193);
+
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 5625994);
 }
