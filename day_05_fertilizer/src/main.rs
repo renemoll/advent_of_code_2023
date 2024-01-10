@@ -37,31 +37,45 @@ fn parse(contents: &String) -> Input {
 fn do_part1(input: &Input) -> usize {
     let Input{seeds, mapping} = input;
 
-    // println!("{:?}", seeds);
-    // println!("{:?}", mapping);
     let mut locations = Vec::new();
     for seed in seeds {
-        // let seed = seeds[0];
         let mut location = *seed;
-        // println!("start seed: {:?}\n", location);
         for m in mapping {
             for (dest, src) in m {
-                // println!("dest: {:?}", dest);
-                // println!("src: {:?}", src);
-
                 if src.contains(&location) {
                     location = dest + location - src.start;
-                    // println!("seed: {:?}\n", seed);
                     break;
                 }
             }
         }
-        // println!("location: {:?}", location);
         locations.push(location);
     }
 
     *locations.iter().min().unwrap()
-    // 0
+}
+
+fn do_part2(input: &Input) -> usize {
+    let Input{seeds, mapping} = input;
+
+    let seed_ranges: Vec<_> = seeds.chunks(2).collect();
+    let mut locations = Vec::new();
+    for i in seed_ranges {
+        for j in 0..i[1] {
+            let seed = i[0] + j;
+            let mut location = seed;
+            for m in mapping {
+                for (dest, src) in m {
+                    if src.contains(&location) {
+                        location = dest + location - src.start;
+                        break;
+                    }
+                }
+            }
+            locations.push(location);
+        }
+    }
+
+    *locations.iter().min().unwrap()
 }
 
 fn main() {
@@ -71,9 +85,9 @@ fn main() {
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-    // assert!(part1 == 240320250);
+    assert!(part1 == 240320250);
 
-    // let part2 = do_part2(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 91031374);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 28580589);
 }
