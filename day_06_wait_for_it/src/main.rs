@@ -32,11 +32,29 @@ fn do_part1(input: &Input) -> usize {
         let d = t.map(|x| (race.time - x) * x)
             .filter(|&x| x > race.distance)
             .collect::<Vec<_>>();
-        // println!("d: {:?}", d.len())
         result = result * d.len();
     }
 
     result
+}
+
+fn do_part2(input: &Input) -> usize {
+    let mut t = String::new();
+    let mut d = String::new();
+    for race in input.races.iter() {
+        t += &race.time.to_string();
+        d += &race.distance.to_string();
+    }
+
+    let time: usize = t.parse().unwrap();
+    let distance: usize = d.parse().unwrap();
+
+    let t = 1..time;
+    let d = t.map(|x| (time - x) * x)
+        .filter(|&x| x > distance)
+        .collect::<Vec<_>>();
+
+    d.len()
 }
 
 fn main() {
@@ -46,9 +64,9 @@ fn main() {
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-    // assert!(part1 == 1624896);
+    assert!(part1 == 1624896);
 
-    // let part2 = do_part2(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 28580589);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 32583852);
 }
