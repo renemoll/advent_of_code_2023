@@ -28,7 +28,6 @@ fn parse(contents: &String) -> Input {
 }
 
 fn do_part1(input: &Input) -> usize {
-    // println!("{:?}", input);
     let Input{directions, map} = input;
 
     let mut key = "AAA";
@@ -51,6 +50,53 @@ fn do_part1(input: &Input) -> usize {
     steps
 }
 
+// https://en.wikipedia.org/wiki/Greatest_common_divisor#Euclidean_algorithm
+fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        return a;
+    }
+
+    return gcd(b, a % b);
+}
+
+// https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
+fn lcm(a: usize, b: usize) -> usize {
+    a * b / gcd(a, b)
+}
+
+fn do_part2(input: &Input) -> usize {
+    let Input{directions, map} = input;
+
+    let mut keys: Vec<_> = map.keys().filter(|x| x.chars().nth(2) == Some('A')).collect();
+    let mut steps = 0;
+    let mut result = directions.len();
+
+    loop {
+        for key in keys.clone().iter() {
+            if key.chars().nth(2) == Some('Z') {
+                result = lcm(result, steps);
+                keys = keys.iter().filter(|&x| x != key).map(|&x| x).collect();
+            }
+        }
+
+        for (i, key) in keys.clone().iter().enumerate() {
+            let (left, right) = map.get(&key as &str).unwrap();
+            keys[i] = match directions.chars().nth(steps % directions.len()).unwrap() {
+                'L' => left,
+                'R' => right,
+                _ => key,
+            };
+        }
+        steps += 1;
+
+        if keys.len() == 0 {
+            break;
+        }
+    }
+
+    result
+}
+
 fn main() {
     let file_path = "input.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
@@ -58,9 +104,9 @@ fn main() {
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-    // assert!(part1 == 16531);
+    assert!(part1 == 16531);
 
-    // let part2 = do_part2(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 254412181);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 24035773251517);
 }
