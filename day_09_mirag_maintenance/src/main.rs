@@ -6,6 +6,11 @@ struct Sequence {
 }
 
 impl Sequence {
+    fn parse(line: &str) -> Self {
+        let data: Vec<isize> = line.split(" ").map(|x| x.parse().unwrap()).collect();
+        Sequence{data}
+    }
+
     fn diff(&self) -> Sequence {
         return Sequence{
             data: self.data
@@ -42,9 +47,7 @@ fn parse(contents: &String) -> Input {
     let mut result: Vec<Sequence> = Vec::new();
 
     for line in contents.lines() {
-        result.push(Sequence{
-            data: line.split(" ").map(|x| x.parse().unwrap()).collect()
-        })
+        result.push(Sequence::parse(line));
     }
 
     Input{sequences: result}
