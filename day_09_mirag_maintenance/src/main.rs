@@ -50,19 +50,37 @@ fn parse(contents: &String) -> Input {
     Input{sequences: result}
 }
 
-fn process(xs: &Sequence) -> isize {
+fn process_forwards(xs: &Sequence) -> isize {
     if xs.all_zero() {
         return 0;
     }
 
     let d = xs.diff();
-    return xs.data.last().unwrap() + process(&d);
+    return xs.data.last().unwrap() + process_forwards(&d);
 }
 
 fn do_part1(input: &Input) -> isize {
     let mut result = 0;
     for s in input.sequences.iter() {
-        result += process(s);
+        result += process_forwards(s);
+    }
+
+    result
+}
+
+fn process_backwards(xs: &Sequence) -> isize {
+    if xs.all_zero() {
+        return 0;
+    }
+
+    let d = xs.diff();
+    return xs.data.first().unwrap() - process_backwards(&d);
+}
+
+fn do_part2(input: &Input) -> isize {
+    let mut result = 0;
+    for s in input.sequences.iter() {
+        result += process_backwards(s);
     }
 
     result
@@ -77,7 +95,7 @@ fn main() {
     println!("Result part 1: {part1}");
     assert!(part1 == 1987402313);
 
-    // let part2 = do_part2(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 24035773251517);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 900);
 }
