@@ -157,12 +157,12 @@ fn do_part1(input: &Input) -> usize {
             .filter(|&c| c.x >= 0 && c.y >= 0 && *pipes.get(&c) != Pipe::Ground)
             .collect::<Vec<_>>();
 
-        for opt in options {
-            let new = seen.iter().find(|&x| *x == opt) == None;
-            let unique = next.iter().find(|&x| *x == opt) == None;
-            if new && unique {
-                next.push(opt);
-            }
+        let opt = options
+            .iter()
+            .filter(|&c| seen.iter().find(|&x| x == c) == None)
+            .collect::<Vec<_>>();
+        if opt.len() > 0 {
+            next.push(**opt.first().unwrap());
         }
 
         count += 1;
@@ -174,6 +174,55 @@ fn do_part1(input: &Input) -> usize {
     count / 2
 }
 
+fn do_part2(input: &Input) -> isize {
+    let Input{pipes, movement, start} = input;
+
+    let mut count = 0;
+    let mut seen : Vec<Coordinate> = Vec::new();
+    let mut next : Vec<Coordinate> = Vec::new();
+    next.push(*start);
+
+    loop {
+        let current = next.pop().unwrap();
+        seen.push(current);
+
+        let options = movement
+            .get(&current)
+            .iter()
+            .map(|&rel| current + rel)
+            .filter(|&c| c.x >= 0 && c.y >= 0 && *pipes.get(&c) != Pipe::Ground)
+            .collect::<Vec<_>>();
+
+        let opt = options
+            .iter()
+            .filter(|&c| seen.iter().find(|&x| x == c) == None)
+            .collect::<Vec<_>>();
+        if opt.len() > 0 {
+            next.push(**opt.first().unwrap());
+        }
+
+        count += 1;
+        if next.len() == 0 {
+            break;
+        }
+    }
+
+    // https://en.wikipedia.org/wiki/Shoelace_formula
+    seen.push(*start);
+    let det = seen
+        .windows(2)
+        .map(|x| {
+            let [a, b] = x else { unreachable!() };
+            (a.x * b.y) - (b.x * a.y)
+        })
+        .collect::<Vec<_>>();
+
+    let area = det.iter().sum::<isize>().abs() / 2;
+
+    // https://en.wikipedia.org/wiki/Pick%27s_theorem
+    area - count / 2 + 1
+}
+
 fn main() {
     let file_path = "input.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
@@ -181,9 +230,9 @@ fn main() {
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-    // assert!(part1 == 6701);
+    assert!(part1 == 6701);
 
-    // let part2 = do_part(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 900);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 303);
 }
