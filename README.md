@@ -43,3 +43,17 @@ I figured calculating the kind of hand was doable based on the occurrence of eac
 ## Day 8
 
 The first part was, of course, easy. For the second part, I attempted to re-use my naive solution from the first part and traverse the map until all keys indicated an end. After roughly half an hour, I aborted the brute force implementation. Realizing I only needed one solution for each path (cycle) and then determining when all paths coincide made for a quick solution.
+
+## Day 9
+
+Differentiation, this was a fun one as I inmediatly had a solution which turned out to work. It also allowed me to explide some (for me) new language constructs in Rust.
+
+## Day 10
+
+This puzzle was a good excuse to write some infrastructure to represent the map in a useful form. I opted to refactor my previous matrix implementation to allow data access via a coordinate struct. Then, combining relative and absolute coordinates to access the matrix, we can easily find the path through the pipes.
+
+Having already heard the algorithms other people are using made the second part a bit too easy.
+
+## Day 11
+
+Looks like another refactor on the matrix implementation :). Until I realized I did not need to, and made my life quite a bit easier.
