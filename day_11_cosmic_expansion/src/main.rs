@@ -61,17 +61,27 @@ impl Coordinate {
 
 #[derive(Debug)]
 struct Input {
+    data: Matrix<u8>,
     galaxies: Vec<Coordinate>,
-    offset_x: Vec<usize>,
-    offset_y: Vec<usize>
 }
 
 fn parse(contents: &String) -> Input {
     let data = Matrix::parse(contents);
     let galaxies = data.find_all(b'#');
 
-    let mut offset_x = vec![1;data.rows as usize];
-    let mut offset_y = vec![1;data.columns as usize];
+    Input{ data, galaxies }
+}
+
+struct Expansion {
+    x: Vec<usize>,
+    y: Vec<usize>
+}
+
+fn expand(input: &Input, offset: usize) -> Expansion {
+    let Input{data, galaxies} = input;
+
+    let mut offset_x = vec![offset;data.rows as usize];
+    let mut offset_y = vec![offset;data.columns as usize];
     for c in galaxies.iter() {
         offset_x[c.x as usize] = 0;
         offset_y[c.y as usize] = 0;
@@ -92,19 +102,41 @@ fn parse(contents: &String) -> Input {
         offset_y[n] = offset;
     }
 
-    Input{ galaxies, offset_x, offset_y}
+    Expansion{ x: offset_x, y: offset_y }
 }
 
 fn do_part1(input: &Input) -> usize {
-    let Input{galaxies, offset_x, offset_y} = input;
+    let Input{ data, galaxies } = input;
+    let Expansion{ x, y } = expand(input, 1);
 
     let mut length = 0;
     for (n, start) in galaxies.iter().enumerate() {
-        let sx = start.x as usize + offset_x[start.x as usize];
-        let sy = start.y as usize + offset_y[start.y as usize];
+        let sx = start.x as usize + x[start.x as usize];
+        let sy = start.y as usize + y[start.y as usize];
         for other in galaxies.iter().skip(n) {
-            let ox = other.x as usize + offset_x[other.x as usize];
-            let oy = other.y as usize + offset_y[other.y as usize];
+            let ox = other.x as usize + x[other.x as usize];
+            let oy = other.y as usize + y[other.y as usize];
+
+            let dx = cmp::max(sx, ox) - cmp::min(sx, ox);
+            let dy = cmp::max(sy, oy) - cmp::min(sy, oy);
+            length += dx + dy;
+        }
+    }
+
+    length
+}
+
+fn do_part2(input: &Input) -> usize {
+    let Input{ data, galaxies } = input;
+    let Expansion{ x, y } = expand(input, 1000000 - 1);
+
+    let mut length = 0;
+    for (n, start) in galaxies.iter().enumerate() {
+        let sx = start.x as usize + x[start.x as usize];
+        let sy = start.y as usize + y[start.y as usize];
+        for other in galaxies.iter().skip(n) {
+            let ox = other.x as usize + x[other.x as usize];
+            let oy = other.y as usize + y[other.y as usize];
 
             let dx = cmp::max(sx, ox) - cmp::min(sx, ox);
             let dy = cmp::max(sy, oy) - cmp::min(sy, oy);
@@ -117,15 +149,14 @@ fn do_part1(input: &Input) -> usize {
 
 fn main() {
     let file_path = "input.txt";
-    // let file_path = "sample1.txt";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
     let input = parse(&contents);
 
     let part1 = do_part1(&input);
     println!("Result part 1: {part1}");
-    // assert!(part1 == 9509330);
+    assert!(part1 == 9509330);
 
-    // let part2 = do_part2(&input);
-    // println!("Result part 2: {part2}");
-    // assert!(part2 == 303);
+    let part2 = do_part2(&input);
+    println!("Result part 2: {part2}");
+    assert!(part2 == 635832237682);
 }

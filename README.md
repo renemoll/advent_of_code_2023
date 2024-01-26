@@ -56,4 +56,4 @@ Having already heard the algorithms other people are using made the second part 
 
 ## Day 11
 
-Looks like another refactor on the matrix implementation :). Until I realized I did not need to, and made my life quite a bit easier.
+Looks like another refactor on the matrix implementation :). Until I realized I did not need to, and made my life quite a bit easier. After seeying part 2, I knew I made the right choise.
